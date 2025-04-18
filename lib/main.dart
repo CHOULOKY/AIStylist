@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'home_screen.dart';
 import 'closet_screen.dart';
-import 'recommendation_screen.dart';
-import 'history_screen.dart';
+import 'aistylist_screen.dart';
+import 'calendar_screen.dart';
 import 'profile_screen.dart';
 import 'utility.dart';
 
-void main() {
+void main() async {
+  // import 는 package:intl/date_symbol_data_local.dart
+  await initializeDateFormatting();
+
   runApp(const AIStylistApp());
 }
 
@@ -40,12 +44,12 @@ final GoRouter _router = GoRouter(
       pageBuilder: (context, state) => buildSlidePage(const ClosetScreen()),
     ),
     GoRoute(
-      path: '/recommend',
-      pageBuilder: (context, state) => buildSlidePage(const RecommendationScreen()),
+      path: '/aistylist',
+      pageBuilder: (context, state) => buildSlidePage(const AIStylistScreen()),
     ),
     GoRoute(
-      path: '/history',
-      pageBuilder: (context, state) => buildSlidePage(const HistoryScreen()),
+      path: '/calendar',
+      pageBuilder: (context, state) => buildSlidePage(const CalendarScreen()),
     ),
     GoRoute(
       path: '/profile',

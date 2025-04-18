@@ -7,7 +7,6 @@ class ProductCard extends StatelessWidget {
   final String image;
   final String brand;
   final String title;
-  final String price;
   final bool liked;
   final VoidCallback onLikeToggle;
 
@@ -16,7 +15,6 @@ class ProductCard extends StatelessWidget {
     required this.image,
     required this.brand,
     required this.title,
-    required this.price,
     required this.liked,
     required this.onLikeToggle,
   });
@@ -61,26 +59,7 @@ class ProductCard extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         Text(title),
-        Text(
-          price,
-          style: const TextStyle(color: Colors.red),
-        ),
       ],
     );
   }
 }
-
-/*
-Widget buildProductCard(int index) {
-  final item = closetItems[index];
-
-  return ProductCard(
-    image: item['image'],
-    brand: item['brand'],
-    title: item['title'],
-    price: item['price'],
-    liked: item['liked'],
-    onLikeToggle: () => toggleLike(index),
-  );
-}
- */

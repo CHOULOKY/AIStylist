@@ -1,10 +1,10 @@
 // lib/data/shareddata.dart
-final List<Map<String, dynamic>> closetItems = List.generate(10, (index) {
+final List<Map<String, dynamic>> closetItems = List.generate(30, (index) {
   return {
-    'brand': index % 2 == 0 ? '21WN' : 'lame',
+    'brand': '${index}',
     'title': 'reversible angora cardigan',
-    'price': '\$120',
     'image': 'assets/images/testbanner.jpg',
     'liked': false,
+    'category': index % 3 == 0 ? '입을 옷' : index % 3 == 1 ? '안 입을 옷' : '세탁 중',
   };
 });
