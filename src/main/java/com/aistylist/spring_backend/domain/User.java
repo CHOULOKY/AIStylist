@@ -25,7 +25,8 @@ public class User {
     private String password;
 
     private String name;
-
+    private Integer height;
+    private String bodyType;
     private LocalDateTime createdDay;
     private LocalDateTime updatedDay;
 

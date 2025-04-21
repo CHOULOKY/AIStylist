@@ -1,9 +1,12 @@
 package com.aistylist.spring_backend.controller;
 
 import com.aistylist.spring_backend.domain.User;
+import com.aistylist.spring_backend.dto.UserInfoRequest;
+import com.aistylist.spring_backend.dto.UserInfoResponse;
 import com.aistylist.spring_backend.dto.UserLoginRequest;
 import com.aistylist.spring_backend.dto.UserRegisterRequest;
 import com.aistylist.spring_backend.repository.UserRepository;
+import com.aistylist.spring_backend.service.UserService;
 import com.aistylist.spring_backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -95,6 +101,31 @@ public class UserController {
         response.put("email", user.getEmail());
         response.put("name", user.getName());
 
+        return ResponseEntity.ok(response);
+    }
+
+    // 사용자 정보 저장 또는 수정
+    @PostMapping("/info")
+    public ResponseEntity<?> saveUserInfo(@RequestHeader("Authorization") String authHeader,
+                                          @RequestBody UserInfoRequest request) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("토큰이 없습니다.");
+        }
+
+        String token = authHeader.substring(7); // Bearer 제거
+        userService.saveUserInfo(token, request);
+        return ResponseEntity.ok("사용자 정보 저장 완료");
+    }
+
+    // 사용자 정보 조회
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("토큰이 없습니다.");
+        }
+
+        String token = authHeader.substring(7);
+        UserInfoResponse response = userService.getUserInfo(token);
         return ResponseEntity.ok(response);
     }
 }

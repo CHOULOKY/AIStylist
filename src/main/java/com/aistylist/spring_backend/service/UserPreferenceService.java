@@ -35,7 +35,6 @@ public class UserPreferenceService {
         preference.setPreferredStyle(request.getPreferredStyle());
         preference.setPreferredColor(request.getPreferredColor());
         preference.setAvoidStyle(request.getAvoidStyle());
-        preference.setBodyType(request.getBodyType());
 
         preferenceRepository.save(preference);
     }
@@ -50,8 +49,7 @@ public class UserPreferenceService {
         return new UserPreferenceResponse(
                 preference.getPreferredStyle(),
                 preference.getPreferredColor(),
-                preference.getAvoidStyle(),
-                preference.getBodyType()
+                preference.getAvoidStyle()
         );
     }
 }

@@ -22,7 +22,6 @@ public class UserPreference {
     private String preferredStyle;
     private String preferredColor;
     private String avoidStyle;
-    private String bodyType;
 
     private LocalDateTime updatedDay;
 

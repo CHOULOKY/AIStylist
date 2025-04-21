@@ -8,13 +8,11 @@ public class UserPreferenceResponse {
     private final String preferredStyle;
     private final String preferredColor;
     private final String avoidStyle;
-    private final String bodyType;
 
-    public UserPreferenceResponse(String preferredStyle, String preferredColor, String avoidStyle, String bodyType) {
+    public UserPreferenceResponse(String preferredStyle, String preferredColor, String avoidStyle) {
         this.preferredStyle = preferredStyle;
         this.preferredColor = preferredColor;
         this.avoidStyle = avoidStyle;
-        this.bodyType = bodyType;
     }
 
 }

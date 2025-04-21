@@ -4,7 +4,6 @@ public class UserPreferenceRequest {
     private String preferredStyle;
     private String preferredColor;
     private String avoidStyle;
-    private String bodyType;
 
     // Getter & Setter
     public String getPreferredStyle() {
@@ -31,11 +30,4 @@ public class UserPreferenceRequest {
         this.avoidStyle = avoidStyle;
     }
 
-    public String getBodyType() {
-        return bodyType;
-    }
-
-    public void setBodyType(String bodyType) {
-        this.bodyType = bodyType;
-    }
 }

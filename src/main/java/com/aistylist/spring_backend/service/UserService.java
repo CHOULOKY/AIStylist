@@ -1,8 +1,12 @@
 package com.aistylist.spring_backend.service;
 
 import com.aistylist.spring_backend.domain.User;
+import com.aistylist.spring_backend.dto.UserInfoRequest;
+import com.aistylist.spring_backend.dto.UserInfoResponse;
 import com.aistylist.spring_backend.repository.UserRepository;
+import com.aistylist.spring_backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email)
@@ -26,5 +34,29 @@ public class UserService {
 
     public User register(User user) {
         return userRepository.save(user);
+    }
+
+    // 사용자 정보 저장/수정
+    public void saveUserInfo(String token, UserInfoRequest request) {
+        String email = jwtUtil.extractEmail(token);
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        user.setName(request.getName());
+        user.setHeight(request.getHeight());
+        user.setBodyType(request.getBodyType());
+
+        userRepository.save(user);
+    }
+
+    // 사용자 정보 조회
+    public UserInfoResponse getUserInfo(String token) {
+        String email = jwtUtil.extractEmail(token);
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        return new UserInfoResponse(
+                user.getName(),
+                user.getHeight(),
+                user.getBodyType()
+        );
     }
 }
