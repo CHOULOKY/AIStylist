@@ -55,21 +55,21 @@ public class RecommendService {
      */
     public Mono<RecommendResponse> getRecommend(String userEmail, RecommendRequest request) {
 
-        // 1. 사용자 조회 (없으면 예외 발생)
+        // 1. 사용자 조회
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail)); // 적절한 예외 처리 필요
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
 
-        // 2. 사용자 선호 정보 조회 (없을 수도 있음)
+        // 2. 사용자 선호 정보 조회
         Optional<UserPreference> userPreferenceOpt = userPreferenceRepository.findByUser(user);
 
-        // 3. 사용자 옷장 조회 (없으면 예외 또는 빈 결과 처리)
+        // 3. 사용자 옷장 조회
         List<Clothes> wardrobeEntityList = clothesRepository.findByUserId(user.getId());
         if (wardrobeEntityList.isEmpty()) {
             log.warn("User {}'s wardrobe is empty. Cannot generate recommendation.", userEmail);
-            return Mono.error(new RuntimeException("옷장에 등록된 옷이 없습니다.")); // 클라이언트에게 전달될 메시지
+            return Mono.error(new RuntimeException("옷장에 등록된 옷이 없습니다."));
         }
 
-        // 4. 옷장 Entity -> DTO 변환 (프롬프트용)
+        // 4. 옷장 Entity -> DTO 변환
         List<ClothingItemDto> wardrobeDtoList = wardrobeEntityList.stream()
                 .map(this::mapToClothingItemDto)
                 .collect(Collectors.toList());
@@ -86,22 +86,22 @@ public class RecommendService {
 
         // 7. OpenAI 요청 본문 생성
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-3.5-turbo"); // 필요시 모델 변경 (e.g., "gpt-4")
+
+        requestBody.put("model", "gpt-4o-mini");
         requestBody.put("messages", List.of(
                 Map.of("role", "system", "content", "당신은 패션 전문가입니다. 주어진 사용자 정보, 옷장, 상황에 맞춰 옷을 추천하고, 요청된 JSON 형식으로만 응답해주세요."),
                 Map.of("role", "user", "content", prompt)
         ));
-        requestBody.put("temperature", 0.7); // 응답 다양성 조절 (0.0 ~ 2.0)
-        // requestBody.put("response_format", Map.of("type", "json_object")); // 최신 모델 JSON 모드 (선택적)
+        requestBody.put("temperature", 0.7);
+        requestBody.put("response_format", Map.of("type", "json_object"));
 
         // 8. API 호출 및 응답 처리
         return webClient.post()
                 .bodyValue(requestBody)
                 .retrieve()
-                // .onStatus(HttpStatus::isError, clientResponse -> ...) // HTTP 에러 처리 강화
-                .bodyToMono(String.class) // 응답 본문을 String으로 받음
-                .flatMap(this::parseOpenAIResponse) // 받은 String을 파싱하여 RecommendResponse로 변환
-                .doOnError(error -> log.error("Error during OpenAI API call or processing for user {}: {}", userEmail, error.getMessage())); // 에러 로깅
+                .bodyToMono(String.class)
+                .flatMap(this::parseOpenAIResponse)
+                .doOnError(error -> log.error("Error during OpenAI API call or processing for user {}: {}", userEmail, error.getMessage()));
     }
 
     /**
