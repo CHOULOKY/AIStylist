@@ -1,22 +1,24 @@
 // imagecard.dart
 import 'package:flutter/material.dart';
 
-import 'data/shareddata.dart';
+import '../data/clothdata.dart';
 
 class ProductCard extends StatelessWidget {
+  final int id;
   final String image;
-  final String brand;
-  final String title;
-  final bool liked;
-  final VoidCallback onLikeToggle;
+  final String category;
+  final String color;
+  final String season;
+  final String style;
 
   const ProductCard({
     super.key,
+    required this.id,
     required this.image,
-    required this.brand,
-    required this.title,
-    required this.liked,
-    required this.onLikeToggle,
+    required this.category,
+    required this.color,
+    required this.season,
+    required this.style,
   });
 
   @override
@@ -41,24 +43,16 @@ class ProductCard extends StatelessWidget {
                   color: Colors.white.withOpacity(0.7),
                   shape: BoxShape.circle,
                 ),
-                child: IconButton(
-                  icon: Icon(
-                    liked ? Icons.favorite : Icons.favorite_border,
-                    color: liked ? Colors.red : Colors.black54,
-                    size: 20,
-                  ),
-                  onPressed: onLikeToggle,
-                ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 6),
         Text(
-          brand,
+          category,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        Text(title),
+        Text(id.toString()),
       ],
     );
   }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import 'appbar.dart';
-import 'navigationbar.dart';
+import '../utility/appbar.dart';
+import '../utility/navigationbar.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});

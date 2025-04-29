@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'home_screen.dart';
-import 'closet_screen.dart';
-import 'aistylist_screen.dart';
-import 'calendar_screen.dart';
-import 'profile_screen.dart';
-import 'utility.dart';
+import 'screen/home_screen.dart';
+import 'screen/closet_screen.dart';
+import 'screen/aistylist_screen.dart';
+import 'screen/calendar_screen.dart';
+import 'screen/profile_screen.dart';
+import 'utility/utility.dart';
 
 void main() async {
   // import 는 package:intl/date_symbol_data_local.dart

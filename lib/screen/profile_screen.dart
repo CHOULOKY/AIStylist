@@ -1,17 +1,17 @@
-// 📌 AI Stylist 화면
+// 📌 프로필 및 회원 관리 화면
 import 'package:flutter/material.dart';
 
-import 'appbar.dart';
-import 'navigationbar.dart';
+import '../utility/appbar.dart';
+import '../utility/navigationbar.dart';
 
-class AIStylistScreen extends StatefulWidget {
-  const AIStylistScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
   @override
-  AIStylistState createState() => AIStylistState();
+  ProfileState createState() => ProfileState();
 }
 
-class AIStylistState extends State<AIStylistScreen> {
+class ProfileState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

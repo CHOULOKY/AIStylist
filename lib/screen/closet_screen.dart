@@ -1,9 +1,10 @@
-import 'package:aistylist/data/shareddata.dart';
+import 'package:aistylist/data/clothdata.dart';
 import 'package:flutter/material.dart';
 
-import 'appbar.dart';
-import 'imagecard.dart';
-import 'navigationbar.dart';
+import '../service/clothservice.dart';
+import '../utility/appbar.dart';
+import '../utility/imagecard.dart';
+import '../utility/navigationbar.dart';
 
 class ClosetScreen extends StatefulWidget {
   const ClosetScreen({super.key});
@@ -13,15 +14,21 @@ class ClosetScreen extends StatefulWidget {
 }
 
 class _ClosetScreenState extends State<ClosetScreen> {
-  final items = closetItems;
+  final service = DbService();
+  List<ClothItem> items = [];
+  //final items = testClosetItems;
+
+  @override
+  void initState() {
+    super.initState();
+    service.fetchItems().then((list) {
+      setState(() => items = list);
+    });
+  }
+
   String selectedCategory = '입을 옷'; // 초기 카테고리
   final categories = ['입을 옷', '안 입을 옷', '세탁 중'];
 
-  void toggleLike(int index) {
-    setState(() {
-      items[index]['liked'] = !items[index]['liked'];
-    });
-  }
 
 
   @override
@@ -71,7 +78,7 @@ class _ClosetScreenState extends State<ClosetScreen> {
 
 
   Widget _buildGridSection() {
-    final filteredItems = items.where((item) => item['category'] == selectedCategory).toList();
+    final filteredItems = items.where((item) => item.category == selectedCategory).toList();
 
     return LayoutBuilder(
         builder: (context, constraints) {
@@ -86,11 +93,12 @@ class _ClosetScreenState extends State<ClosetScreen> {
                           final item = filteredItems[index];
                           final originalIndex = items.indexOf(item);
                           return ProductCard(
-                            image: item['image'],
-                            brand: item['brand'],
-                            title: item['title'],
-                            liked: item['liked'],
-                            onLikeToggle: () => toggleLike(originalIndex),
+                            id: item.id,
+                            image: item.image,
+                            category: item.category,
+                            color: item.color,
+                            season: item.season,
+                            style: item.style,
                           );
                         },
                     childCount: filteredItems.length,
