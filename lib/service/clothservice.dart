@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/clothdata.dart';
+import '../utility/utility.dart';
 import 'authservice.dart';
 import 'constants.dart';
 
@@ -20,8 +21,11 @@ class DbService {
     final res = await http.get(_clothBaseUrl, headers: headers);
 
     if (res.statusCode == 200) {
-      final List body = jsonDecode(res.body);
+      // UTF‑8로 디코딩하고 JSON 배열로 파싱
+      final List<dynamic> body = ResponseDecoder.decodeListJson(res);
       return body.map((e) => ClothItem.fromJson(e)).toList();
+      //final List body = jsonDecode(res.body);
+      //return body.map((e) => ClothItem.fromJson(e)).toList();
     }
     throw Exception('Failed to load items (${res.statusCode})');
   }

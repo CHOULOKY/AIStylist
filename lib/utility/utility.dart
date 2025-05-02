@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' show Response;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -51,3 +54,18 @@ Widget buildDivider() {
 }
 Widget _dividerLine() =>
     Container(width: 100, height: 1, color: Colors.grey.withValues(alpha: (0.3 * 255)));
+
+/// HTTP 응답을 UTF-8로 디코딩하고 JSON으로 변환하는 도우미 클래스
+class ResponseDecoder {
+  /// Response의 바이트를 UTF-8로 디코딩한 뒤 JSON object(Map)로 반환
+  static Map<String, dynamic> decodeJson(Response response) {
+    final jsonString = utf8.decode(response.bodyBytes);
+    return jsonDecode(jsonString) as Map<String, dynamic>;
+  }
+
+  /// Response의 바이트를 UTF-8로 디코딩한 뒤 JSON 배열(List)로 반환
+  static List<dynamic> decodeListJson(Response response) {
+    final jsonString = utf8.decode(response.bodyBytes);
+    return jsonDecode(jsonString) as List<dynamic>;
+  }
+}

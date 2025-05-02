@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 
 import 'authservice.dart';
 import 'constants.dart';
+import '../utility/utility.dart';
 
 class UserService {
   final AuthService _auth = AuthService();
@@ -18,7 +19,8 @@ class UserService {
     final headers = await _auth.getAuthHeaders();
     final res = await http.get(_meUri, headers: headers);
     if (res.statusCode == 200) {
-      return jsonDecode(res.body) as Map<String, dynamic>;
+      return ResponseDecoder.decodeJson(res);
+      //return jsonDecode(res.body) as Map<String, dynamic>;
     }
     throw Exception('getMe 실패 (${res.statusCode}): ${res.body}');
   }
@@ -51,7 +53,9 @@ class UserService {
     final headers = await _auth.getAuthHeaders();
     final res = await http.get(_infoUri, headers: headers);
     if (res.statusCode == 200) {
-      return jsonDecode(res.body) as Map<String, dynamic>;
+      // bodyBytes를 utf8로 직접 디코딩
+      return ResponseDecoder.decodeJson(res);
+      //return jsonDecode(res.body) as Map<String, dynamic>;
     }
     throw Exception('getUserInfo 실패 (${res.statusCode}): ${res.body}');
   }
@@ -84,7 +88,8 @@ class UserService {
     final headers = await _auth.getAuthHeaders();
     final res = await http.get(_prefUri, headers: headers);
     if (res.statusCode == 200) {
-      return jsonDecode(res.body) as Map<String, dynamic>;
+      return ResponseDecoder.decodeJson(res);
+      //return jsonDecode(res.body) as Map<String, dynamic>;
     }
     throw Exception('getPreference 실패 (${res.statusCode}): ${res.body}');
   }
