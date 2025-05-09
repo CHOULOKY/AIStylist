@@ -1,4 +1,5 @@
 // imagecard.dart
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../data/clothdata.dart';
@@ -30,9 +31,11 @@ class ProductCard extends StatelessWidget {
           children: [
             AspectRatio(
               aspectRatio: 1,
-              child: Image.asset(
-                image,
+              child: CachedNetworkImage(
+                imageUrl: image,
                 fit: BoxFit.cover,
+                placeholder: (_, __) => Center(child: CircularProgressIndicator()),
+                errorWidget: (_, __, ___) => Center(child: Icon(Icons.broken_image)),
               ),
             ),
             Positioned(

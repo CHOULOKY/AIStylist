@@ -28,12 +28,12 @@ class ClothItem {
   });
 
   factory ClothItem.fromJson(Map<String, dynamic> json) => ClothItem(
-    id: json['id'],
-    image: json['image'],
-    category: json['category'],
-    color: json['color'],
-    season: json['season'],
-    style: json['style'],
+    id: json['id'] as int,
+    image: json['imageUrl'] as String? ?? '',       // ← 여기 수정
+    category: json['category'] as String? ?? '',
+    color: json['color'] as String? ?? '',
+    season: json['season'] as String? ?? '',
+    style: json['style'] as String? ?? '',
   );
 
   Map<String, dynamic> toJson() => {

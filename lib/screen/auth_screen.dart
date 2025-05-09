@@ -277,11 +277,12 @@ class _AuthScreenState extends State<AuthScreen> {
     if (name.isEmpty || email.isEmpty || pwd.isEmpty || confirmPwd.isEmpty) {
       showSnack(context, '모든 필드를 입력해주세요');
       return;
+    } else if(pwd != confirmPwd) {
+      showSnack(context, '비밀번호가 일치하지 않습니다.');
+      return;
     }
     try {
-      await _authService.register(
-          email: email, password: pwd, confirmPassword: confirmPwd, name: name
-      );
+      await _authService.register(email: email, password: pwd, name: name);
       if (!mounted) return;
       showSnack(context, '회원가입 성공');
       context.push('/');

@@ -12,7 +12,7 @@ AppBar buildAppBar(BuildContext context) {
     ),
     title: GestureDetector(
       onTap: () {
-        context.push('/'); // 📌 홈으로 이동
+        context.push('/closet'); // 📌 홈으로 이동
       },
       child: const Text(
         "AI Stylist",

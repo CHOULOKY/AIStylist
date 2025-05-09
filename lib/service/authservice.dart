@@ -13,13 +13,8 @@ class AuthService {
   Future<void> register({
     required String email,
     required String password,
-    required String confirmPassword,
     required String name,
   }) async {
-    if (password != confirmPassword) {
-      throw Exception('비밀번호가 일치하지 않습니다.');
-    }
-
     final response = await http.post(
       _registerUri,
       headers: {'Content-Type': 'application/json'},

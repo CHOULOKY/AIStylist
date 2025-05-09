@@ -29,4 +29,38 @@ class DbService {
     }
     throw Exception('Failed to load items (${res.statusCode})');
   }
+
+  // 아이템 등록
+  Future<bool> addClothItem({
+    required String userId,
+    required String imageUrl,
+    required String category,
+    required String color,
+    required String season,
+    required String style,
+  }) async {
+    final headers = await _auth.getAuthHeaders();
+
+    final Map<String, dynamic> body = {
+      'userId': userId,
+      'imageUrl': imageUrl,
+      'category': category,
+      'color': color,
+      'season': season,
+      'style': style,
+    };
+
+    final res = await http.post(
+      _clothBaseUrl,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      return true;
+    } else {
+      throw Exception('옷 등록 실패: ${res.statusCode} ${res.body}');
+    }
+  }
+
 }

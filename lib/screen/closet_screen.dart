@@ -23,11 +23,12 @@ class _ClosetScreenState extends State<ClosetScreen> {
     super.initState();
     service.fetchItems().then((list) {
       setState(() => items = list);
+      print('응답 데이터: $items');
     });
   }
 
-  String selectedCategory = '입을 옷'; // 초기 카테고리
-  final categories = ['입을 옷', '안 입을 옷', '세탁 중'];
+  String selectedCategory = '상의'; // 초기 카테고리
+  final categories = ['상의', '하의', '아우터', '신발'];
 
 
 
