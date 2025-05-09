@@ -26,7 +26,8 @@ public class User {
 
     private String name;
     private Integer height;
-    private String bodyType;
+    @Enumerated(EnumType.STRING)
+    private BodyType bodyType;
     private LocalDateTime createdDay;
     private LocalDateTime updatedDay;
 

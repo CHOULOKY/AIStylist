@@ -43,6 +43,9 @@ public class UserService {
 
         user.setName(request.getName());
         user.setHeight(request.getHeight());
+        if (request.getBodyType() == null) {
+            throw new IllegalArgumentException("bodyType 값이 올바르지 않습니다.");
+        }
         user.setBodyType(request.getBodyType());
 
         userRepository.save(user);

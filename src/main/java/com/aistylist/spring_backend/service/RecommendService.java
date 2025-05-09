@@ -111,10 +111,10 @@ public class RecommendService {
     private ClothingItemDto mapToClothingItemDto(Clothes clothes) {
         return new ClothingItemDto(
                 String.valueOf(clothes.getId()),
-                clothes.getCategory(),
-                clothes.getColor(),
-                clothes.getSeason(),
-                clothes.getStyle()
+                clothes.getCategory().getDisplayName(),
+                clothes.getColor().getDisplayName(),
+                clothes.getSeason().getDisplayName(),
+                clothes.getStyle().getDisplayName()
         );
     }
 

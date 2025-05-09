@@ -47,4 +47,16 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    // Authorization 헤더에서 Bearer 토큰 추출 및 유효성 검사
+    public String extractValidToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+        String token = authHeader.substring(7);
+        if (!validateToken(token)) {
+            return null;
+        }
+        return token;
+    }
 }
