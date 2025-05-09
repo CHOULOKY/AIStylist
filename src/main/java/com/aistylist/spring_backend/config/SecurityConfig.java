@@ -64,4 +64,4 @@ public class SecurityConfig {
         // 설정된 HttpSecurity 객체를 빌드하여 SecurityFilterChain 반환
         return http.build();
     }
-}
+    }
