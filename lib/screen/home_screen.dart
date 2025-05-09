@@ -145,7 +145,9 @@ class HomeScreenState extends State<HomeScreen> {
       return;
     }
     try {
-      await _authService.register(email: email, password: pwd, name: name);
+      await _authService.register(
+          email: email, password: pwd, confirmPassword: "", name: name
+      );
       _showSnack('회원가입 성공');
     } catch (e) {
       _showSnack('회원가입 실패: $e');

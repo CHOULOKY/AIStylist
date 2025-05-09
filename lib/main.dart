@@ -1,3 +1,4 @@
+import 'package:aistylist/screen/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -35,9 +36,15 @@ class AIStylistApp extends StatelessWidget {
 final GoRouter _router = GoRouter(
   initialLocation: '/',
   routes: [
+    /* // for test
     GoRoute(
       path: '/',
       pageBuilder: (context, state) => buildSlidePage(const HomeScreen()),
+    ),
+    */
+    GoRoute(
+      path: '/',
+      pageBuilder: (context, state) => buildSlidePage(const AuthScreen()),
     ),
     GoRoute(
       path: '/closet',
