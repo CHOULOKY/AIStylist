@@ -23,4 +23,8 @@ public class ClothesService {
         clothes.setCreatedDay(java.time.LocalDateTime.now());
         return clothesRepository.save(clothes);
     }
+
+    public List<Clothes> getClothesByUserId(Long userId) {
+        return clothesRepository.findByUserId(userId);
+    }
 }

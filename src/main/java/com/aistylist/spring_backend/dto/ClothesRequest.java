@@ -1,0 +1,16 @@
+package com.aistylist.spring_backend.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClothesRequest {
+    private String imageUrl;
+    private String category;
+    private String color;
+    private String season;
+    private String style;
+} 

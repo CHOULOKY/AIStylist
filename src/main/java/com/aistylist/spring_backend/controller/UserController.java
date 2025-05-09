@@ -76,31 +76,19 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getMyInfo(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 없습니다.");
-        }
-
-        String token = authHeader.substring(7); // "Bearer " 제거
-
-        // ✅ 토큰 유효성 검사
-        if (!jwtUtil.validateToken(token)) {
+        String token = jwtUtil.extractValidToken(authHeader);
+        if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
         }
-
-        // ✅ 유효하다면 이메일 추출
         String email = jwtUtil.extractEmail(token);
-
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
         }
-
         User user = userOpt.get();
-
         Map<String, Object> response = new HashMap<>();
         response.put("email", user.getEmail());
         response.put("name", user.getName());
-
         return ResponseEntity.ok(response);
     }
 
@@ -108,11 +96,10 @@ public class UserController {
     @PostMapping("/info")
     public ResponseEntity<?> saveUserInfo(@RequestHeader("Authorization") String authHeader,
                                           @RequestBody UserInfoRequest request) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("토큰이 없습니다.");
+        String token = jwtUtil.extractValidToken(authHeader);
+        if (token == null) {
+            return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
         }
-
-        String token = authHeader.substring(7); // Bearer 제거
         userService.saveUserInfo(token, request);
         return ResponseEntity.ok("사용자 정보 저장 완료");
     }
@@ -120,11 +107,10 @@ public class UserController {
     // 사용자 정보 조회
     @GetMapping("/info")
     public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("토큰이 없습니다.");
+        String token = jwtUtil.extractValidToken(authHeader);
+        if (token == null) {
+            return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
         }
-
-        String token = authHeader.substring(7);
         UserInfoResponse response = userService.getUserInfo(token);
         return ResponseEntity.ok(response);
     }
