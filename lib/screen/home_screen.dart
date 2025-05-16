@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
   final UserService _userService = UserService();
-  final DbService _dbService = DbService();
+  final ClothService _clothService = ClothService();
 
   // 회원가입용 컨트롤러
   final TextEditingController _regNameCtrl = TextEditingController();
@@ -238,7 +238,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<void> _onGetClothes() async {
     try {
-      final items = await _dbService.fetchItems();
+      final items = await _clothService.fetchItems();
       _showDialog('GET /clothes', '총 ${items.length}개 아이템');
     } catch (e) {
       _showSnack('오류: $e');

@@ -1,64 +1,53 @@
 class User {
-  final String id;
-  final String password;
   final String email;
   final String name;
-  final String gender;
-  final String age;
-  final String height;
-  final String bodyType;
-  final String createdDay;
-  final String updatedDay;
-  final String preferredStyle;
-  final String preferredColor;
-  final String avoidStyle;
+  final String? gender;
+  final String? age;
+  final String? height;
+  final String? bodyType;
+  final String? preferredStyle;
+  final String? preferredColor;
+  final String? avoidStyle;
 
   User({
-    required this.id,
-    required this.password,
     required this.email,
     required this.name,
-    required this.gender,
-    required this.age,
-    required this.height,
-    required this.bodyType,
-    required this.createdDay,
-    required this.updatedDay,
-    required this.preferredStyle,
-    required this.preferredColor,
-    required this.avoidStyle,
+    this.gender,
+    this.age,
+    this.height,
+    this.bodyType,
+    this.preferredStyle,
+    this.preferredColor,
+    this.avoidStyle,
   });
 
+  // JSON -> 객체
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        id: json['id'],
-        password: json['password'],
-        email: json['email'],
-        name: json['name'],
-        gender: json['gender'],
-        age: json['age'],
-        height: json['height'],
-        bodyType: json['bodyType'],
-        createdDay: json['createdDay'],
-        updatedDay: json['updatedDay'],
-        preferredStyle: json['preferredStyle'],
-        preferredColor: json['preferredColor'],
-        avoidStyle: json['avoidStyle'],
+      email: json['email'] as String,
+      name: json['name'] as String,
+      gender: json['gender'] as String?,
+      age: json['age'] as String?,
+      height: json['height'] as String?,
+      bodyType: json['bodyType'] as String?,
+      preferredStyle: json['preferredStyle'] as String?,
+      preferredColor: json['preferredColor'] as String?,
+      avoidStyle: json['avoidStyle'] as String?,
     );
   }
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'password': password,
-    'email': email,
-    'name': name,
-    'gender': gender,
-    'age': age,
-    'height': height,
-    'bodyType': bodyType,
-    'createdDay': createdDay,
-    'updatedDay': updatedDay,
-    'preferredStyle': preferredStyle,
-    'preferredColor': preferredColor,
-    'avoidStyle': avoidStyle,
-  };
+  // 객체 -> JSON
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{
+      'email': email,
+      'name': name,
+    };
+    if (gender != null)       map['gender'] = gender;
+    if (age != null)          map['age'] = age;
+    if (height != null)       map['height'] = height;
+    if (bodyType != null)     map['bodyType'] = bodyType;
+    if (preferredStyle != null)  map['preferredStyle'] = preferredStyle;
+    if (preferredColor != null)  map['preferredColor'] = preferredColor;
+    if (avoidStyle != null)      map['avoidStyle'] = avoidStyle;
+    return map;
+  }
 }

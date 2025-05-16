@@ -7,7 +7,7 @@ import '../utility/utility.dart';
 import 'authservice.dart';
 import 'constants.dart';
 
-class DbService {
+class ClothService {
   final AuthService _auth = AuthService();  // ① AuthService 인스턴스
 
   // API 기본 URL

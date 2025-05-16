@@ -1,4 +1,6 @@
 import 'package:aistylist/screen/auth_screen.dart';
+import 'package:aistylist/service/AppLifecycleService.dart';
+import 'package:aistylist/service/tokenservice.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -8,10 +10,14 @@ import 'screen/aistylist_screen.dart';
 import 'screen/calendar_screen.dart';
 import 'screen/profile_screen.dart';
 import 'utility/utility.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
-  // import 는 package:intl/date_symbol_data_local.dart
+  WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
+
+  // 앱 라이프사이클 옵저버 등록 (토큰 삭제 기능 활성화)
+  AppLifecycleService.instance;
 
   runApp(const AIStylistApp());
 }

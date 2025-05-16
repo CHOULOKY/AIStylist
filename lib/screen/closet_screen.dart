@@ -14,7 +14,7 @@ class ClosetScreen extends StatefulWidget {
 }
 
 class _ClosetScreenState extends State<ClosetScreen> {
-  final service = DbService();
+  final service = ClothService();
   List<ClothItem> items = [];
   //final items = testClosetItems;
 

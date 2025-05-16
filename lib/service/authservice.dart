@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:aistylist/service/tokenservice.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,26 +53,18 @@ class AuthService {
       final data = jsonDecode(response.body);
       final token = data['token'] as String;
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('jwt_token', token);
+      TokenService.saveToken(token);
     } else {
       throw Exception('로그인 실패 (${response.statusCode}): ${response.body}');
     }
   }
 
-  /// 로컬에 저장된 JWT 토큰 조회
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('jwt_token');
-  }
-
   Future<Map<String, String>> getAuthHeaders() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token') ?? '';
+    final token = await TokenService.getToken() ?? '';
 
     return {
       'Content-Type': 'application/json',
-      if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+      if (token != '') 'Authorization': 'Bearer $token',
     };
   }
 }

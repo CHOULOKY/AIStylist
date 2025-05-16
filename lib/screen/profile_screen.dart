@@ -1,6 +1,9 @@
 import 'package:aistylist/utility/utility.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import '../service/tokenservice.dart';
 import '../service/userservice.dart';
 import '../utility/appbar.dart';
 import '../utility/navigationbar.dart';
@@ -30,8 +33,8 @@ class ProfileState extends State<ProfileScreen> {
       // mounted 확인
       if (!mounted) return;
       setState(() {
-        _userName = data['name'] as String? ?? '';
-        _userEmail = data['email'] as String? ?? '';
+        _userName = data['name'] as String? ?? 'null';
+        _userEmail = data['email'] as String? ?? 'null';
       });
     } catch (e) {
       // 로드 실패 시, 로그나 스낵바 처리
@@ -68,9 +71,9 @@ class ProfileState extends State<ProfileScreen> {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            '홍길동',
+                            _userName,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -78,7 +81,7 @@ class ProfileState extends State<ProfileScreen> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'hong@gmail.com',
+                            _userEmail,
                             style: TextStyle(
                               color: Colors.black54,
                             ),
@@ -175,8 +178,34 @@ class ProfileState extends State<ProfileScreen> {
               _buildListTile(
                 icon: Icons.logout,
                 text: '로그아웃',
-                onTap: () {
-                  // 로그아웃 로직
+                onTap: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('로그아웃'),
+                        content: const Text('정말 로그아웃하시겠습니까?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('취소'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('로그아웃'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                  if (confirm == true) {
+                    await TokenService.clearToken();
+                    if (mounted) {
+                      context.push('/'); // 로그인 화면으로 이동 (스택 제거)
+                      showSnack(context, '로그아웃 되었습니다.');
+                    }
+                  }
                 },
               ),
             ],

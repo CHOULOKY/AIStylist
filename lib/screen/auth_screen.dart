@@ -4,11 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../service/authservice.dart';
 import '../service/clothservice.dart';
+import '../service/tokenservice.dart';
 import '../service/userservice.dart';
 import '../utility/utility.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({Key? key}) : super(key: key);
+  const AuthScreen({super.key});
 
   @override
   _AuthScreenState createState() => _AuthScreenState();
@@ -17,7 +18,21 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final AuthService _authService = AuthService();
   final UserService _userService = UserService();
-  final DbService _dbService = DbService();
+  final ClothService _clothService = ClothService();
+
+  @override
+  void initState() {
+    super.initState();
+    _redirectIfLoggedIn();
+  }
+
+  Future<void> _redirectIfLoggedIn() async {
+    final hasToken = await TokenService.hasToken();
+    if (hasToken && mounted) {
+      showSnack(context, '로그인 성공');
+      context.push('/closet');
+    }
+  }
 
 
   bool _isSignIn = true;
