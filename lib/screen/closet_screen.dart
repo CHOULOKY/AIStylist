@@ -1,5 +1,6 @@
 import 'package:aistylist/data/clothdata.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../service/clothservice.dart';
 import '../utility/appbar.dart';
@@ -23,7 +24,7 @@ class _ClosetScreenState extends State<ClosetScreen> {
     super.initState();
     service.fetchItems().then((list) {
       setState(() => items = list);
-      print('응답 데이터: $items');
+      // print('응답 데이터: $items');
     });
   }
 
@@ -36,6 +37,28 @@ class _ClosetScreenState extends State<ClosetScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.75,
+        child: Drawer( // Drawer 위젯으로 만들기
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(color: Colors.black),
+                child: Text('메뉴', style: TextStyle(color: Colors.white)),
+              ),
+              ListTile(
+                title: const Text('홈'),
+                onTap: () => context.push('/closet'),
+              ),
+              ListTile(
+                title: const Text('프로필'),
+                onTap: () => context.push('/profile'),
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: buildAppBar(context),
       body: Column(
         children: [
@@ -92,7 +115,7 @@ class _ClosetScreenState extends State<ClosetScreen> {
                   delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           final item = filteredItems[index];
-                          final originalIndex = items.indexOf(item);
+                          // final originalIndex = items.indexOf(item);
                           return ProductCard(
                             id: item.id,
                             image: item.image,

@@ -6,14 +6,20 @@ AppBar buildAppBar(BuildContext context) {
   return AppBar(
     backgroundColor: Colors.black,
     elevation: 0,
-    leading: IconButton(
-      icon: const Icon(Icons.menu, color: Colors.white, size: 25),
-      onPressed: () {}, // 메뉴 열기
+    leading: Builder(
+      builder: (innerContext) {
+        return IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white, size: 25),
+          onPressed: () {
+            // Builder가 제공하는 innerContext는 Scaffold의 하위이므로
+            // 이 컨텍스트를 사용해야 openDrawer()가 동작
+            Scaffold.of(innerContext).openDrawer();
+          },
+        );
+      },
     ),
     title: GestureDetector(
-      onTap: () {
-        context.push('/closet'); // 📌 홈으로 이동
-      },
+      onTap: () => context.push('/closet'),
       child: const Text(
         "AI Stylist",
         style: TextStyle(
@@ -27,9 +33,7 @@ AppBar buildAppBar(BuildContext context) {
     actions: [
       IconButton(
         icon: const Icon(Icons.account_circle, color: Colors.white, size: 25),
-        onPressed: () {
-          context.push('/profile'); // 📌 프로필 이동
-        }, // 추천 이동
+        onPressed: () => context.push('/profile'),
       ),
     ],
   );

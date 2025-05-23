@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/clothdata.dart';
@@ -17,7 +21,7 @@ class ClothService {
   /// 전체 아이템 가져오기
   Future<List<ClothItem>> fetchItems() async {
     // ② AuthService.getAuthHeaders() 호출
-    final headers = await _auth.getAuthHeaders();
+    final headers = await _auth.getJsonHeaders();
     final res = await http.get(_clothBaseUrl, headers: headers);
 
     if (res.statusCode == 200) {
@@ -32,29 +36,40 @@ class ClothService {
 
   // 아이템 등록
   Future<bool> addClothItem({
-    required String userId,
-    required String imageUrl,
+    required File imageFile,
     required String category,
     required String color,
     required String season,
     required String style,
   }) async {
-    final headers = await _auth.getAuthHeaders();
+    // 1) 토큰 헤더 준비
+    final headers = await _auth.getMultipartHeaders();
+    // 2) MultipartRequest 생성
+    final request = http.MultipartRequest('POST', _clothBaseUrl)
+      ..headers.addAll(headers);
 
-    final Map<String, dynamic> body = {
-      'userId': userId,
-      'imageUrl': imageUrl,
-      'category': category,
-      'color': color,
-      'season': season,
-      'style': style,
-    };
-
-    final res = await http.post(
-      _clothBaseUrl,
-      headers: headers,
-      body: jsonEncode(body),
+    // 3) 이미지 파일 파트 추가
+    final mimeType = lookupMimeType(imageFile.path) ?? 'application/octet-stream';
+    final mimeParts = mimeType.split('/');
+    request.files.add(
+      http.MultipartFile(
+        'image', // 키: @RequestPart("image") 와 매핑
+        imageFile.openRead(), // 파일 스트림: HTTP 바디에 스트리밍 업로드
+        await imageFile.length(), // 스트림으로부터 읽어올 전체 바이트 크기
+        filename: basename(imageFile.path), // 업로드할 파일의 원본 파일명
+        contentType: MediaType(mimeParts[0], mimeParts[1]), // Content-Type: image/png
+      ),
     );
+
+    // 4) 다른 필드들 추가
+    request.fields['category'] = category;
+    request.fields['color']    = color;
+    request.fields['season']   = season;
+    request.fields['style']    = style;
+
+    // 5) 전송 및 응답 처리
+    final streamedResponse = await request.send();
+    final res = await http.Response.fromStream(streamedResponse);
 
     if (res.statusCode == 200 || res.statusCode == 201) {
       return true;

@@ -59,12 +59,20 @@ class AuthService {
     }
   }
 
-  Future<Map<String, String>> getAuthHeaders() async {
+  Future<Map<String, String>> getJsonHeaders() async {
     final token = await TokenService.getToken() ?? '';
 
     return {
       'Content-Type': 'application/json',
       if (token != '') 'Authorization': 'Bearer $token',
+    };
+  }
+
+  // 멀티파트 전용 헤더 (Content-Type 없음 — MultipartRequest가 붙여 줌)
+  Future<Map<String, String>> getMultipartHeaders() async {
+    final token = await TokenService.getToken() ?? '';
+    return {
+      if (token.isNotEmpty) 'Authorization': 'Bearer $token',
     };
   }
 }

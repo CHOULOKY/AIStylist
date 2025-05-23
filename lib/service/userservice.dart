@@ -16,7 +16,7 @@ class UserService {
   /// ─ GET /users/me ───────────────────────────────────────
   /// JWT 헤더를 포함해 현재 로그인한 사용자의 이메일과 이름을 조회
   Future<Map<String, dynamic>> getMe() async {
-    final headers = await _auth.getAuthHeaders();
+    final headers = await _auth.getJsonHeaders();
     final res = await http.get(_meUri, headers: headers);
     if (res.statusCode == 200) {
       return ResponseDecoder.decodeJson(res);
@@ -32,7 +32,7 @@ class UserService {
     required int height,
     required String bodyType,
   }) async {
-    final headers = await _auth.getAuthHeaders();
+    final headers = await _auth.getJsonHeaders();
     final res = await http.post(
       _infoUri,
       headers: headers,
@@ -50,7 +50,7 @@ class UserService {
   /// ─ GET /users/info ────────────────────────────────────
   /// 저장된 사용자 정보를 조회
   Future<Map<String, dynamic>> getUserInfo() async {
-    final headers = await _auth.getAuthHeaders();
+    final headers = await _auth.getJsonHeaders();
     final res = await http.get(_infoUri, headers: headers);
     if (res.statusCode == 200) {
       // bodyBytes를 utf8로 직접 디코딩
@@ -67,7 +67,7 @@ class UserService {
     required String preferredColor,
     required String avoidStyle,
   }) async {
-    final headers = await _auth.getAuthHeaders();
+    final headers = await _auth.getJsonHeaders();
     final res = await http.post(
       _prefUri,
       headers: headers,
@@ -85,7 +85,7 @@ class UserService {
   /// ─ GET /users/preferences ─────────────────────────────
   /// 저장된 사용자 선호 정보를 조회
   Future<Map<String, dynamic>> getPreference() async {
-    final headers = await _auth.getAuthHeaders();
+    final headers = await _auth.getJsonHeaders();
     final res = await http.get(_prefUri, headers: headers);
     if (res.statusCode == 200) {
       return ResponseDecoder.decodeJson(res);
