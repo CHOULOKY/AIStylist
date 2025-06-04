@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.aistylist.spring_backend.dto.ClothingItemDto;
 import com.aistylist.spring_backend.dto.RecommendRequest;
-import com.aistylist.spring_backend.dto.RecommendResponse;
 import com.aistylist.spring_backend.domain.Clothes;
 import com.aistylist.spring_backend.domain.User;
 import com.aistylist.spring_backend.domain.UserPreference;
@@ -53,7 +52,7 @@ public class RecommendService {
      * @param request 추천 요청 컨텍스트 (TPO, 날씨, 기온, 스타일)
      * @return 추천 결과 Mono<RecommendResponse>
      */
-    public Mono<RecommendResponse> getRecommend(String userEmail, RecommendRequest request) {
+    public Mono<Map<String, Object>> getRecommend(String userEmail, RecommendRequest request) {
 
         // 1. 사용자 조회
         User user = userRepository.findByEmail(userEmail)
@@ -64,6 +63,8 @@ public class RecommendService {
 
         // 3. 사용자 옷장 조회
         List<Clothes> wardrobeEntityList = clothesRepository.findByUserId(user.getId());
+        Map<Long, Clothes> userWardrobeMap = wardrobeEntityList.stream()
+                .collect(Collectors.toMap(Clothes::getId, c -> c));
         if (wardrobeEntityList.isEmpty()) {
             log.warn("User {}'s wardrobe is empty. Cannot generate recommendation.", userEmail);
             return Mono.error(new RuntimeException("옷장에 등록된 옷이 없습니다."));
@@ -100,8 +101,16 @@ public class RecommendService {
                 .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(String.class)
-                .flatMap(this::parseOpenAIResponse)
-                .doOnError(error -> log.error("Error during OpenAI API call or processing for user {}: {}", userEmail, error.getMessage()));
+                .flatMap(aiRawResponse -> {
+                    log.debug("Raw OpenAI Response body for user {}: {}", userEmail, aiRawResponse);
+                    try {
+                        return processAiResponseAndFetchImageUrls(aiRawResponse, userWardrobeMap);
+                    } catch (Exception e) {
+                        log.error("Error processing AI response or fetching image URLs for user {}: {}", userEmail, e.getMessage(), e);
+                        return Mono.error(new RuntimeException("AI 응답 처리 또는 이미지 URL 조회 중 오류 발생: " + e.getMessage(), e));
+                    }
+                })
+                .doOnError(error -> log.error("Error in recommendation flow for user {}: {}", userEmail, error.getMessage(), error));
     }
 
     /**
@@ -162,7 +171,7 @@ public class RecommendService {
 
         // 최종 프롬프트 템플릿
         return String.format(
-                "다음 정보를 바탕으로 사용자에게 가장 적합한 오늘의 코디(상의, 하의, 아우터)를 추천해주세요.\n\n" +
+                "다음 정보를 바탕으로 사용자에게 가장 적합한 오늘의 코디(상의, 하의, 아우터, 신발)를 추천해주세요.\n\n" +
                         "--- 사용자 정보 ---\n" +
                         "%s\n" + // 사용자 기본 설명
                         "%s\n" + // 사용자 선호/비선호 정보
@@ -174,7 +183,7 @@ public class RecommendService {
                         "--- 사용자의 옷장 ---\n" +
                         "%s\n\n" +
                         "--- 중요 요구사항 ---\n" +
-                        "1. 옷장 목록에서 상의(top), 하의(bottom), 아우터(outer)를 각각 1개씩 선택하여 ID로 반환해주세요.\n" +
+                        "1. 옷장 목록에서 상의(top), 하의(bottom), 아우터(outer), 신발(shoes)를 각각 1개씩 선택하여 ID로 반환해주세요.\n" +
                         "2. 아우터는 날씨나 스타일에 따라 필요 없으면 값으로 `null`을 포함시켜주세요 (따옴표 없이).\n" +
                         "3. 사용자의 선호/비선호 스타일, 체형, 요청 상황(TPO, 날씨, 기온, 희망 스타일)을 종합적으로 고려해주세요.\n" +
                         "4. 추천 이유를 'reason' 키 값으로 간결하고 명확하게 설명해주세요.\n" +
@@ -183,6 +192,7 @@ public class RecommendService {
                         "{\n" +
                         "  \"top\": \"<추천 상의 ID>\",\n" +
                         "  \"bottom\": \"<추천 하의 ID>\",\n" +
+                        "  \"shoes\": \"<추천 신발 ID>\",\n" +
                         "  \"outer\": <추천 아우터 ID 또는 null>,\n" +
                         "  \"reason\": \"<추천 이유 요약>\"\n" +
                         "}\n" +
@@ -200,21 +210,29 @@ public class RecommendService {
     /**
      * OpenAI API 응답(문자열)을 파싱하여 RecommendResponse 객체로 변환합니다.
      */
-    private Mono<RecommendResponse> parseOpenAIResponse(String responseBody) {
-        log.debug("Raw OpenAI Response body: {}", responseBody);
+        // Helper for logging potentially large AI responses
+    private String contentForLogging(String content) {
+        if (content != null && content.length() > 500) { // Log only first 500 chars if too long
+            return content.substring(0, 500) + "... (truncated)";
+        }
+        return content;
+    }
+
+    private Mono<Map<String, Object>> processAiResponseAndFetchImageUrls(String aiRawResponseBody, Map<Long, Clothes> userWardrobeMap) {
+        log.debug("Raw OpenAI Response body: {}", aiRawResponseBody);
         try {
             // OpenAI 응답 구조에서 실제 content 추출
-            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            Map<String, Object> responseMap = objectMapper.readValue(aiRawResponseBody, Map.class);
             List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");
 
             if (choices == null || choices.isEmpty()) {
-                log.error("OpenAI response 'choices' field is missing or empty. Response: {}", responseBody);
+                log.error("OpenAI response 'choices' field is missing or empty. Response: {}", aiRawResponseBody);
                 return Mono.error(new RuntimeException("OpenAI 응답 형식이 잘못되었습니다 (choices 없음)."));
             }
 
             Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
             if (message == null || message.get("content") == null) {
-                log.error("OpenAI response 'message' or 'content' field is missing. Response: {}", responseBody);
+                log.error("OpenAI response 'message' or 'content' field is missing. Response: {}", aiRawResponseBody);
                 return Mono.error(new RuntimeException("OpenAI 응답 형식이 잘못되었습니다 (content 없음)."));
             }
 
@@ -228,17 +246,67 @@ public class RecommendService {
                 content = content.substring(3, content.length() - 3).trim();
             }
 
-            // content(JSON 문자열)를 RecommendResponse 객체로 변환
-            RecommendResponse recommendResponse = objectMapper.readValue(content, RecommendResponse.class);
-            log.info("Successfully parsed OpenAI content into RecommendResponse: {}", recommendResponse);
-            return Mono.just(recommendResponse);
+            // content(JSON 문자열)를 Map<String, String>으로 파싱 (AI가 ID와 이유를 담은 간단한 JSON을 준다고 가정)
+            Map<String, String> aiSuggestedIds = objectMapper.readValue(content, new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {});
+            log.debug("Parsed AI suggested IDs: {}", aiSuggestedIds);
+
+            Map<String, Object> finalRecommendation = new HashMap<>();
+
+            // Helper function to create Map with id and imageUrl
+            java.util.function.Function<String, Map<String, Object>> getItemWithImageUrl = (idStr) -> {
+                if (idStr == null || idStr.equalsIgnoreCase("null") || idStr.trim().isEmpty()) {
+                    return null;
+                }
+                try {
+                    Long id = Long.parseLong(idStr);
+                    Clothes clothes = userWardrobeMap.get(id);
+                    if (clothes != null) {
+                        Map<String, Object> itemMap = new HashMap<>();
+                        itemMap.put("id", clothes.getId());
+                        itemMap.put("imageUrl", clothes.getImageUrl()); // imageUrl 필드가 Clothes 엔티티에 있다고 가정
+                        return itemMap;
+                    } else {
+                        log.warn("Clothing item with ID '{}' not found in user's wardrobe.", idStr);
+                        // ID는 반환하고 imageUrl은 null, 에러 메시지 추가 가능
+                        return Map.of("id", Long.parseLong(idStr), "imageUrl", null, "error", "Item not found");
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("Invalid ID format '{}'.", idStr);
+                    return Map.of("id", idStr, "imageUrl", null, "error", "Invalid ID format");
+                }
+            };
+
+            finalRecommendation.put("top", getItemWithImageUrl.apply(aiSuggestedIds.get("top")));
+            finalRecommendation.put("bottom", getItemWithImageUrl.apply(aiSuggestedIds.get("bottom")));
+            finalRecommendation.put("shoes", getItemWithImageUrl.apply(aiSuggestedIds.get("shoes")));
+            finalRecommendation.put("outer", getItemWithImageUrl.apply(aiSuggestedIds.get("outer")));
+            finalRecommendation.put("reason", aiSuggestedIds.get("reason"));
+
+            log.info("Successfully processed AI response and mapped to items with image URLs: {}", finalRecommendation);
+            return Mono.just(finalRecommendation);
 
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse JSON from OpenAI response content. Content: '{}', Error: {}", responseBody, e.getMessage());
+            // 'content' 변수는 이 catch 블록의 스코프 밖이므로 aiRawResponseBody 또는 try 블록 내부에서 정의된 content를 사용해야 합니다.
+            // 여기서는 AI 응답에서 추출 시도했던 'content'를 로깅하는 것이 더 유용할 수 있으나, 해당 변수가 없을 수 있으므로 aiRawResponseBody를 로깅합니다.
+            // 더 정확하게는 try 블록 내에서 content 변수를 선언하고, catch 블록에서도 접근 가능하도록 스코프를 조정하거나, null 체크 후 사용해야 합니다.
+            // 우선은 aiRawResponseBody의 content 부분을 로깅하도록 수정합니다.
+            String extractedContentForLog = "Error extracting content";
+            try {
+                Map<String, Object> tempResponseMap = objectMapper.readValue(aiRawResponseBody, Map.class);
+                List<Map<String, Object>> tempChoices = (List<Map<String, Object>>) tempResponseMap.get("choices");
+                if (tempChoices != null && !tempChoices.isEmpty()) {
+                    Map<String, Object> tempChoice = tempChoices.get(0);
+                    Map<String, Object> tempMessage = (Map<String, Object>) tempChoice.get("message");
+                    if (tempMessage != null && tempMessage.get("content") != null) {
+                        extractedContentForLog = (String) tempMessage.get("content");
+                    }
+                }
+            } catch (Exception ignored) {}
+            log.error("Failed to parse JSON from OpenAI response content. Extracted Content for Logging: '{}', Error: {}", contentForLogging(extractedContentForLog), e.getMessage());
             // AI가 JSON 형식을 제대로 지키지 않았을 가능성 높음
             return Mono.error(new RuntimeException("OpenAI 응답을 파싱하는 중 오류가 발생했습니다. 응답 형식을 확인해주세요.", e));
         } catch (Exception e) {
-            log.error("Unexpected error occurred while processing OpenAI response. Response: {}, Error: {}", responseBody, e.getMessage(), e);
+            log.error("Unexpected error occurred while processing OpenAI response. Response: {}, Error: {}", contentForLogging(aiRawResponseBody), e.getMessage(), e);
             return Mono.error(new RuntimeException("OpenAI 응답 처리 중 예기치 않은 오류가 발생했습니다.", e));
         }
     }

@@ -62,8 +62,12 @@ public class SecurityConfig {
                         .requestMatchers("/users/login", "/users/register").permitAll()
                         // '/recommends'로 시작하는 경로는 인증된 사용자만 허용
                         .requestMatchers("/recommends/**").permitAll()
+                        // 업로드된 정적 리소스도 모두 허용
+                        .requestMatchers("/uploads/**").permitAll()
                         // '/users/'로 시작하는 나머지 경로 (예: /users/me, /users/info)도 인증된 사용자만 허용
                         .requestMatchers("/users/**").authenticated()
+                        // '/calendar'로 시작하는 경로는 인증된 사용자만 허용
+                        .requestMatchers("/calendar/**").authenticated()
                         // 위에 명시되지 않은 모든 다른 요청들도 인증된 사용자만 허용
                         .anyRequest().authenticated()
                 )
@@ -80,7 +84,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:51580"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:[*]"));
         config.setAllowedMethods(List.of("GET","POST"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
