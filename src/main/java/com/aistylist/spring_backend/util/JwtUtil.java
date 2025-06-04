@@ -4,6 +4,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.security.Key;
 import java.util.Date;
 
@@ -27,6 +30,15 @@ public class JwtUtil {
     // 이메일 추출
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
+    }
+    
+    // 현재 인증된 사용자 ID 가져오기
+    public Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return Long.parseLong(authentication.getName());
+        }
+        throw new RuntimeException("인증된 사용자가 아닙니다.");
     }
 
     // 유효성 검사

@@ -13,6 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.security.config.Customizer;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.List;
+
+
 @Configuration
 @EnableWebSecurity // Spring Security 활성화
 @RequiredArgsConstructor
@@ -32,6 +39,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // test code
+                // Spring MVC에 정의된 CORS 규칙을 Security 필터 체인에도 적용
+                .cors(Customizer.withDefaults())
+
                 // CSRF 보호 비활성화 (Stateless JWT 사용 시 일반적으로 비활성화)
                 .csrf(AbstractHttpConfigurer::disable)
 
@@ -64,4 +75,18 @@ public class SecurityConfig {
         // 설정된 HttpSecurity 객체를 빌드하여 SecurityFilterChain 반환
         return http.build();
     }
+
+    // test code
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:51580"));
+        config.setAllowedMethods(List.of("GET","POST"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
+}
