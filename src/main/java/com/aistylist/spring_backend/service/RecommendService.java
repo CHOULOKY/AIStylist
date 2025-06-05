@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.aistylist.spring_backend.dto.ClothingItemDto;
 import com.aistylist.spring_backend.dto.RecommendRequest;
 import com.aistylist.spring_backend.domain.Clothes;
+import com.aistylist.spring_backend.domain.ClothesSeason;
 import com.aistylist.spring_backend.domain.User;
 import com.aistylist.spring_backend.domain.UserPreference;
 import com.aistylist.spring_backend.repository.ClothesRepository;
@@ -118,11 +119,16 @@ public class RecommendService {
      * (Clothes 엔티티 필드에 맞게 조정 필요)
      */
     private ClothingItemDto mapToClothingItemDto(Clothes clothes) {
+
+        // 계절 목록을 문자열 리스트로 변환
+        List<String> seasonNames = clothes.getSeasons().stream()
+                .map(ClothesSeason::getDisplayName)
+                .collect(Collectors.toList());
         return new ClothingItemDto(
                 String.valueOf(clothes.getId()),
                 clothes.getCategory().getDisplayName(),
                 clothes.getColor().getDisplayName(),
-                clothes.getSeason().getDisplayName(),
+                seasonNames,
                 clothes.getStyle().getDisplayName()
         );
     }
@@ -158,7 +164,11 @@ public class RecommendService {
                         map.put("id", item.getId());
                         if (item.getCategory() != null) map.put("category", item.getCategory());
                         if (item.getColor() != null) map.put("color", item.getColor());
-                        if (item.getSeason() != null) map.put("season", item.getSeason()); // **** 수정 ****
+                        // List<String> → String(콤마 구분)으로 합쳐서 넣기
+                        if (item.getSeasons() != null && !item.getSeasons().isEmpty()) {
+                            String joinedSeasons = String.join(", ", item.getSeasons());
+                            map.put("seasons", joinedSeasons);
+                        }
                         if (item.getStyle() != null) map.put("style", item.getStyle());   // **** 수정 ****
                         return map;
                     })
