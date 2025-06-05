@@ -3,6 +3,9 @@ package com.aistylist.spring_backend.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+import java.util.HashSet;
+
 @Entity
 @Getter
 @Setter
@@ -23,8 +26,12 @@ public class Clothes {
     @Enumerated(EnumType.STRING)
     private ClothesColor color;
 
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private ClothesSeason season;
+    @CollectionTable(name = "clothes_season", joinColumns = @JoinColumn(name = "clothes_id"))
+    @Column(name = "season")
+    @Builder.Default
+    private Set<ClothesSeason> seasons = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private ClothesStyle style;
