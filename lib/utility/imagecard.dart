@@ -9,7 +9,7 @@ class ProductCard extends StatelessWidget {
   final String image;
   final String category;
   final String color;
-  final String season;
+  final List<String> seasons;
   final String style;
 
   const ProductCard({
@@ -18,7 +18,7 @@ class ProductCard extends StatelessWidget {
     required this.image,
     required this.category,
     required this.color,
-    required this.season,
+    required this.seasons,
     required this.style,
   });
 

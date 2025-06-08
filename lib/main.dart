@@ -1,3 +1,4 @@
+import 'package:aistylist/screen/addcloth_screen.dart';
 import 'package:aistylist/screen/auth_screen.dart';
 import 'package:aistylist/service/AppLifecycleService.dart';
 import 'package:aistylist/service/tokenservice.dart';
@@ -55,6 +56,10 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/closet',
       pageBuilder: (context, state) => buildSlidePage(const ClosetScreen()),
+    ),
+    GoRoute(
+      path: '/addcloth',
+      pageBuilder: (context, state) => buildSlidePage(const AddClothScreen()),
     ),
     GoRoute(
       path: '/aistylist',

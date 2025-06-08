@@ -64,7 +64,7 @@ BottomNavigationBar buildNavigationBar(BuildContext context, int currentIndex) {
           context.push('/aistylist');
           break;
         case 2:
-          context.push('/closet'); // 중앙 + 버튼
+          context.push('/addcloth'); // 중앙 + 버튼
           break;
         case 3:
           context.push('/calendar');

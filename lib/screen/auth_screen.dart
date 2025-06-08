@@ -169,6 +169,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Text(_isSignIn ? 'Sign In' : 'Sign Up', style: const TextStyle(fontSize: 16, color: Colors.white)),
               ),
               const SizedBox(height: 16),
+              /*
               if (_isSignIn)
                 Align(
                   alignment: Alignment.centerRight,
@@ -186,6 +187,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   const Text('Continue with Google', style: TextStyle(fontSize: 16)),
                 ],
               ),
+               */
             ],
           ),
         ),

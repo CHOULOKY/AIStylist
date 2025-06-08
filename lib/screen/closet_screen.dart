@@ -121,7 +121,7 @@ class _ClosetScreenState extends State<ClosetScreen> {
                             image: item.image,
                             category: item.category,
                             color: item.color,
-                            season: item.season,
+                            seasons: item.seasons,
                             style: item.style,
                           );
                         },

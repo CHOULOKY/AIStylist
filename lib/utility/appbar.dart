@@ -30,11 +30,13 @@ AppBar buildAppBar(BuildContext context) {
       ),
     ),
     centerTitle: true,
+    /*
     actions: [
       IconButton(
         icon: const Icon(Icons.account_circle, color: Colors.white, size: 25),
         onPressed: () => context.push('/profile'),
       ),
     ],
+    */
   );
 }

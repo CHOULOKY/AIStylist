@@ -3,7 +3,8 @@ class ClothItem {
   final String image;
   final String category;
   final String color;
-  final String season;
+  //final String season;
+  final List<String> seasons;
   final String style;
 
 
@@ -12,7 +13,8 @@ class ClothItem {
     required this.image,
     required this.category,
     required this.color,
-    required this.season,
+    //required this.season,
+    required this.seasons,
     required this.style,
   });
 
@@ -21,7 +23,8 @@ class ClothItem {
     'image': image,
     'category': category,
     'color': color,
-    'season': season,
+    //'season': season,
+    'seasons': seasons,
     'style': style,
   };
 
@@ -31,7 +34,10 @@ class ClothItem {
       image: json['imageUrl'] as String? ?? '',
       category: _mapCategory(json['category']) as String? ?? '', // 영문 → 한글
       color: _mapColor(json['color']) as String? ?? '',
-      season: _mapSeason(json['season']) as String? ?? '',
+      //season: _mapSeason(json['season']) as String? ?? '',
+      seasons: (json['seasons'] as List<dynamic>?)
+          ?.map((e) => _mapSeason(e as String))
+          .toList() ?? [],
       style: _mapStyle(json['style']) as String? ?? '',
     );
   }
