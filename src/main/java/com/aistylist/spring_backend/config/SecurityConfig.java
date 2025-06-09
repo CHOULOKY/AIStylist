@@ -62,6 +62,8 @@ public class SecurityConfig {
                         .requestMatchers("/users/login", "/users/register").permitAll()
                         // '/recommends'로 시작하는 경로는 인증된 사용자만 허용
                         .requestMatchers("/recommends/**").permitAll()
+                        // '/fashion'으로 시작하는 경로는 인증 없이 모두 허용
+                        .requestMatchers("/fashion/**").permitAll()
                         // '/users/'로 시작하는 나머지 경로 (예: /users/me, /users/info)도 인증된 사용자만 허용
                         .requestMatchers("/users/**").authenticated()
                         // 위에 명시되지 않은 모든 다른 요청들도 인증된 사용자만 허용

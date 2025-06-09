@@ -62,4 +62,28 @@ public class FileStorageService {
             throw new RuntimeException("파일 " + fileName + " 저장 실패", ex);
         }
     }
+
+    /**
+     * 이미지 URL을 실제 파일 시스템 경로로 변환
+     * @param imageUrl DB에 저장된 이미지 URL
+     * @return 실제 파일 시스템 경로
+     */
+    public String getFilePath(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            throw new RuntimeException("이미지 URL이 비어있습니다.");
+        }
+
+        // URL에서 파일명 추출
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+        
+        // 실제 파일 경로 생성
+        Path filePath = this.fileStorageLocation.resolve(fileName);
+        
+        // 파일이 존재하는지 확인
+        if (!Files.exists(filePath)) {
+            throw new RuntimeException("파일을 찾을 수 없습니다: " + fileName);
+        }
+
+        return filePath.toString();
+    }
 } 
