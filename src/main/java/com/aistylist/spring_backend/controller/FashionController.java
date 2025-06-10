@@ -23,7 +23,7 @@ public class FashionController {
     private final FileStorageService fileStorageService;
 
     // 고정된 person 이미지 경로
-    private static final String FIXED_PERSON_IMAGE = "demo/example/person/men/model_7.png";
+    private static final String FIXED_PERSON_IMAGE = "demo/example/person/man.png";
 
     public FashionController(
             FashionApiService fashionApiService,
@@ -57,12 +57,14 @@ public class FashionController {
                     lowerImagePath
             );
 
+            logger.info("FastAPI로부터 받은 이미지 크기: {} bytes", resultImage.length);
+
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)
                     .body(resultImage);
 
         } catch (Exception e) {
-            logger.error("가상 착용 처리 중 오류 발생", e);
+            logger.error("가상 착용 중 오류 발생", e);
             return ResponseEntity.internalServerError().body(e.getMessage().getBytes());
         }
     }

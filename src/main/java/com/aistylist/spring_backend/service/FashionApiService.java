@@ -37,7 +37,7 @@ public class FashionApiService {
 
         // 2. 타임아웃 설정을 위한 HttpClient 구성
         HttpClient httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofMinutes(5)); // 응답 타임아웃을 5분으로 넉넉하게 설정
+                .responseTimeout(Duration.ofMinutes(5)); // 응답 타임아웃을 60분으로 설정
 
         // 3. 위 설정들을 적용하여 WebClient 빌드
         this.webClient = webClientBuilder
