@@ -7,6 +7,10 @@ class ClothItem {
   final List<String> seasons;
   final String style;
 
+  @override
+  String toString() {
+    return 'ClothItem(id: $id, image: $image, category: $category, color: $color, seasons: $seasons, style: $style)';
+  }
 
   ClothItem({
     required this.id,

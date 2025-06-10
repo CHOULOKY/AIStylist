@@ -24,7 +24,7 @@ class _ClosetScreenState extends State<ClosetScreen> {
     super.initState();
     service.fetchItems().then((list) {
       setState(() => items = list);
-      // print('응답 데이터: $items');
+      print('서버 응답 데이터: $items');
     });
   }
 
