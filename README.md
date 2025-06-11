@@ -96,4 +96,4 @@ docker-compose up --build
 
 ## 7. 라이선스 (License)
 
-이 프로젝트는 MIT License 하에 배포됩니다.
+
