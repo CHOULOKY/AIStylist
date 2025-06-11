@@ -36,3 +36,13 @@ AIStylist는 다음 기능을 제공합니다:
 - **DevOps**: Docker, Docker Compose, GitHub Actions
 
 ---
+
+## 3. 설치 및 실행 방법 (Getting Started)
+
+## 4. 환경 변수 & 설정 (Configuration)
+
+## 5. API 문서 (API Reference)
+
+## 6. 팀원 및 기여자 (Contributors)
+
+## 7. 라이선스 (License)
