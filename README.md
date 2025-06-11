@@ -1,3 +1,3 @@
-# Project3
+# AIStylist
 group 7
 <br>
