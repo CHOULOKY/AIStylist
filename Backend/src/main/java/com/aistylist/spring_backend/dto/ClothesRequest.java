@@ -14,4 +14,4 @@ public class ClothesRequest {
     private String color;
     private List<String> seasons; // 여러 계절 등록록
     private String style;
-}
+} 

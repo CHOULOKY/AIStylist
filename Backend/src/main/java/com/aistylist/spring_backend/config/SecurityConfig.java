@@ -60,14 +60,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // '/users/login', '/users/register' 경로는 인증 없이 모두 허용
                         .requestMatchers("/users/login", "/users/register").permitAll()
-                        // '/recommends'로 시작하는 경로는 인증된 사용자만 허용
+                        // '/recommends'로 시작하는 경로는 인증 없이 모두 허용 (테스트용)
                         .requestMatchers("/recommends/**").permitAll()
-                        // 업로드된 정적 리소스도 모두 허용
+                        // '/calendar'로 시작하는 경로는 인증된 사용자만 허용
+                        .requestMatchers("/calendar/**").authenticated()
+                        // '/fashion'으로 시작하는 경로는 인증 없이 모두 허용
+                        .requestMatchers("/fashion/**").permitAll()
+                        // '/uploads'로 시작하는 경로는 인증 없이 모두 허용
                         .requestMatchers("/uploads/**").permitAll()
                         // '/users/'로 시작하는 나머지 경로 (예: /users/me, /users/info)도 인증된 사용자만 허용
                         .requestMatchers("/users/**").authenticated()
-                        // '/calendar'로 시작하는 경로는 인증된 사용자만 허용
-                        .requestMatchers("/calendar/**").authenticated()
                         // 위에 명시되지 않은 모든 다른 요청들도 인증된 사용자만 허용
                         .anyRequest().authenticated()
                 )
@@ -84,8 +86,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://localhost:[*]"));
-        config.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

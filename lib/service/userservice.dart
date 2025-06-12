@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../data/clothdata.dart';
 import 'authservice.dart';
 import 'constants.dart';
 import '../utility/utility.dart';
@@ -72,9 +73,9 @@ class UserService {
       _prefUri,
       headers: headers,
       body: jsonEncode({
-        'preferredStyle': preferredStyle,
-        'preferredColor': preferredColor,
-        'avoidStyle': avoidStyle,
+        'preferredStyle': ClothItem.mapStyle(preferredStyle),
+        'preferredColor': ClothItem.mapColor(preferredColor),
+        'avoidStyle': ClothItem.mapStyle(avoidStyle),
       }),
     );
     if (res.statusCode != 200) {

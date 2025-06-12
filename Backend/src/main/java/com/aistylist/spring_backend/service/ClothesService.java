@@ -27,4 +27,15 @@ public class ClothesService {
     public List<Clothes> getClothesByUserId(Long userId) {
         return clothesRepository.findByUserId(userId);
     }
+
+    /**
+     * ID로 의류 정보를 조회합니다.
+     * @param id 의류 ID
+     * @return 조회된 의류 정보
+     * @throws RuntimeException 의류를 찾을 수 없는 경우
+     */
+    public Clothes getClothesById(Long id) {
+        return clothesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("의류를 찾을 수 없습니다: " + id));
+    }
 }

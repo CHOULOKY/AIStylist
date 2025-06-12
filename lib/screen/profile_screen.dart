@@ -3,10 +3,38 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../data/clothdata.dart';
+import '../data/userdata.dart';
 import '../service/tokenservice.dart';
 import '../service/userservice.dart';
 import '../utility/appbar.dart';
 import '../utility/navigationbar.dart';
+
+
+
+const _bodyTypeDisplay = {
+  BodyType.SLIM: '마른',
+  BodyType.ATHLETIC: '운동',
+  BodyType.AVERAGE: '보통',
+  BodyType.CHUBBY: '통통',
+  BodyType.OVERWEIGHT: '비만',
+};
+
+final List<String> _colorOptions = [
+  'BLACK','WHITE','BLUE','RED','GREEN','IVORY','BEIGE','LIGHT_GRAY',
+  'GRAY','DARK_GRAY','BROWN','ORANGE','YELLOW','PINK','PURPLE',
+  'GOLD','SILVER','MULTI','LIGHT_YELLOW','CORAL','DARK_PINK','MINT',
+  'OLIVE','DARK_OLIVE','TEAL','KHAKI','CYAN','SKY_BLUE','NAVY',
+  'LAVENDER','BURGUNDY','CAMEL','DARK_BROWN','MAGENTA'
+];
+
+final List<String> _styleOptions = [
+  'CASUAL','FORMAL','COZY','BUSINESS_CASUAL','MODERN','CLASSIC','MINIMAL',
+  'BOHEMIAN','LUXURY','SPORTY','ATHLEISURE','AFFORDABLE','TRENDY',
+  'MID_RANGE','KID_CORE','BASIC','ARTISTIC','DRESS_UP','HIPSTER',
+  'FEMININE','CHIC','STREET','KITSCH','PUNKY','OTHER'
+];
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,27 +48,179 @@ class ProfileState extends State<ProfileScreen> {
 
   String _userName = '';
   String _userEmail = '';
+  Map<String, dynamic>? _userInfo;    // name, height, bodyType
+  Map<String, dynamic>? _userPref;    // preferredStyle, preferredColor, avoidStyle
 
   @override
   void initState() {
     super.initState();
-    _loadUserInfo();
+    _loadAllUserData();
   }
 
-  Future<void> _loadUserInfo() async {
+  Future<void> _loadAllUserData() async {
     try {
-      final data = await _userService.getMe();
+      final me     = await _userService.getMe();
+      final info   = await _userService.getUserInfo();
+      final pref   = await _userService.getPreference();
       // mounted 확인
       if (!mounted) return;
       setState(() {
-        _userName = data['name'] as String? ?? 'null';
-        _userEmail = data['email'] as String? ?? 'null';
+        _userName  = me['name']  as String? ?? '';
+        _userEmail = me['email'] as String? ?? '';
+        _userInfo  = info;
+        _userPref  = pref;
       });
     } catch (e) {
       // 로드 실패 시, 로그나 스낵바 처리
-      showSnack(context, 'getMe 실패: $e');
+      showSnack(context, '유저 데이터 로드 실패: $e');
     }
   }
+
+  Future<void> _showBodyAndPrefDialog() async {
+    // 기존 값으로 초기화
+    final heightCtl = TextEditingController(
+      text: _userInfo?['height']?.toString() ?? '',
+    );
+
+    BodyType selectedBody = BodyType.values.firstWhere(
+          (e) => e.name.toLowerCase() == (_userInfo?['bodyType'] as String? ?? '').toLowerCase(),
+      orElse: () => BodyType.AVERAGE,
+    );
+
+    String prefColorDisplay = _userPref?['preferredColor'] as String? ?? '';
+    String selectedColor = _colorOptions.firstWhere(
+          (key) => ClothItem.mapColor(key) == prefColorDisplay,
+      orElse: () => _colorOptions.first,
+    );
+
+    String prefStyleDisplay = _userPref?['preferredStyle'] as String? ?? '';
+    String selectedStyle = _styleOptions.firstWhere(
+          (key) => ClothItem.mapStyle(key) == prefStyleDisplay,
+      orElse: () => _styleOptions.first,
+    );
+
+    String prefAvoidDisplay = _userPref?['avoidStyle'] as String? ?? '';
+    String selectedAvoid = _styleOptions.firstWhere(
+          (key) => ClothItem.mapStyle(key) == prefAvoidDisplay,
+      orElse: () => _styleOptions.first,
+    );
+
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('체형·선호 설정'),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              // 키 입력
+              TextField(
+                controller: heightCtl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: '키 (cm)'),
+              ),
+
+              // 체형 선택
+              DropdownButtonFormField<BodyType>(
+                value: selectedBody,
+                decoration: const InputDecoration(labelText: '체형'),
+                items: BodyType.values.map((bt) {
+                  return DropdownMenuItem(
+                    value: bt,
+                    child: Text(_bodyTypeDisplay[bt]!),
+                  );
+                }).toList(),
+                onChanged: (bt) {
+                  if (bt != null) selectedBody = bt;
+                },
+              ),
+
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 16),
+
+              // 선호 색상
+              DropdownButtonFormField<String>(
+                value: selectedColor,
+                decoration: const InputDecoration(labelText: '선호 색상'),
+                items: _colorOptions.map((c) => DropdownMenuItem(
+                  value: c,
+                  child: Text(ClothItem.mapColor(c)),
+                )).toList(),
+                onChanged: (c) {
+                  if (c != null) selectedColor = c;
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // 선호 스타일
+              DropdownButtonFormField<String>(
+                value: selectedStyle,
+                decoration: const InputDecoration(labelText: '선호 스타일'),
+                items: _styleOptions.map((s) => DropdownMenuItem(
+                  value: s,
+                  child: Text(ClothItem.mapStyle(s)),
+                )).toList(),
+                onChanged: (s) {
+                  if (s != null) selectedStyle = s;
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // 기피 스타일
+              DropdownButtonFormField<String>(
+                value: selectedAvoid,
+                decoration: const InputDecoration(labelText: '기피 스타일'),
+                items: _styleOptions.map((s) => DropdownMenuItem(
+                  value: s,
+                  child: Text(ClothItem.mapStyle(s)),
+                )).toList(),
+                onChanged: (s) {
+                  if (s != null) selectedAvoid = s;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('취소')),
+          ElevatedButton(
+            onPressed: () async {
+              final newHeight = int.tryParse(heightCtl.text) ?? 0;
+              if (newHeight <= 0) {
+                showSnack(context, '유효한 키를 입력하세요.');
+                return;
+              }
+              Navigator.pop(ctx);
+              try {
+                // 1) 사용자 정보 저장
+                await _userService.saveUserInfo(
+                  name: _userName,       // 이름은 변경 없으므로 그대로
+                  height: newHeight,
+                  bodyType: selectedBody.name,
+                );
+                // 2) 사용자 선호 저장
+                await _userService.savePreference(
+                  preferredStyle: selectedStyle,
+                  preferredColor: selectedColor,
+                  avoidStyle: selectedAvoid,
+                );
+                // 3) 갱신
+                await _loadAllUserData();
+                showSnack(context, '설정이 저장되었습니다.');
+              } catch (e) {
+                showSnack(context, '저장 실패: $e');
+              }
+            },
+            child: const Text('저장'),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +318,7 @@ class ProfileState extends State<ProfileScreen> {
               _buildListTile(
                 icon: Icons.monitor_weight_outlined,
                 text: '체형 정보 설정',
-                onTap: () {},
+                onTap: _showBodyAndPrefDialog,
               ),
               _buildListTile(
                 icon: Icons.notifications_outlined,
@@ -215,6 +395,9 @@ class ProfileState extends State<ProfileScreen> {
       bottomNavigationBar: buildNavigationBar(context, 4), // 마이페이지 인덱스
     );
   }
+
+
+
 
   Widget _buildListTile({
     required IconData icon,

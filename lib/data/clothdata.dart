@@ -36,17 +36,17 @@ class ClothItem {
     return ClothItem(
       id: json['id'] as int,
       image: json['imageUrl'] as String? ?? '',
-      category: _mapCategory(json['category']) as String? ?? '', // 영문 → 한글
-      color: _mapColor(json['color']) as String? ?? '',
+      category: mapCategory(json['category']) as String? ?? '', // 영문 → 한글
+      color: mapColor(json['color']) as String? ?? '',
       //season: _mapSeason(json['season']) as String? ?? '',
       seasons: (json['seasons'] as List<dynamic>?)
           ?.map((e) => _mapSeason(e as String))
           .toList() ?? [],
-      style: _mapStyle(json['style']) as String? ?? '',
+      style: mapStyle(json['style']) as String? ?? '',
     );
   }
 
-  static String _mapCategory(String eng) {
+  static String mapCategory(String eng) {
     switch (eng) {
       case 'TOP': return '상의';
       case 'BOTTOM': return '하의';
@@ -56,7 +56,7 @@ class ClothItem {
     }
   }
 
-  static String _mapColor(String eng) {
+  static String mapColor(String eng) {
     switch (eng) {
       case 'BLACK': return '블랙';
       case 'WHITE': return '화이트';
@@ -107,7 +107,7 @@ class ClothItem {
     }
   }
 
-  static String _mapStyle(String eng) {
+  static String mapStyle(String eng) {
     switch (eng) {
       case 'CASUAL': return '캐주얼';
       case 'FORMAL': return '포멀';

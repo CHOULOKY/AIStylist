@@ -210,6 +210,12 @@ class _AddClothScreenState extends State<AddClothScreen> {
                 });
               }),
               const SizedBox(height: 12),
+              _buildDropdown('스타일', _selectedStyle, styles, (val) {
+                setState(() {
+                  _selectedStyle = val;
+                });
+              }),
+              const SizedBox(height: 12),
               /*
               _buildDropdown('계절', _selectedSeason, seasons, (val) {
                 setState(() {
@@ -218,12 +224,6 @@ class _AddClothScreenState extends State<AddClothScreen> {
               }),
                */
               _buildMultiSelectSeasons(),
-              const SizedBox(height: 12),
-              _buildDropdown('스타일', _selectedStyle, styles, (val) {
-                setState(() {
-                  _selectedStyle = val;
-                });
-              }),
               const SizedBox(height: 30),
               _isLoading
                   ? const CircularProgressIndicator()

@@ -1,3 +1,5 @@
+enum BodyType { SLIM, ATHLETIC, AVERAGE, CHUBBY, OVERWEIGHT }
+
 class User {
   final String email;
   final String name;
