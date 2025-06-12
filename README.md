@@ -42,6 +42,7 @@ AIStylist는 다음 기능을 제공합니다:
 
 - Docker & Docker Compose 설치
 - Python 3.10+ / Flutter SDK (Frontend 실행 시)
+- https://github.com/L4HO/virtual-tryon-api 트레이스
 
 ### 클론 및 실행
 
@@ -92,15 +93,15 @@ docker-compose up --build
   - Flutter 구현
 
 - **배서진**  
-  - 
+  - UI 디자인
   - 
   
 - **박인희**  
-  - 
+  - 전반적인 Flutter (프론트엔드) 구현
   - 
 
 - **이기환**  
-  - 
+  - 가상 피팅 구현
   - 
 
 ---
