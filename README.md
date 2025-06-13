@@ -27,12 +27,11 @@ AIStylist는 다음 기능을 제공합니다:
 
 ### 주요 기술 스택
 
-- **Backend**: Python (FastAPI, Flask), Node.js (일부 서비스), Spring Boot
+- **Backend**: Python (FastAPI), Spring Boot
 - **Frontend**: Flutter (Android Studio 기반 개발)
-- **AI 모델**: Stable Diffusion, Custom ML Pipelines
-- **DB**: PostgreSQL (서비스별 분리)
+- **AI 모델**: stable-diffusion-inpainting
+- **DB**: PostgreSQL
 - **API 연동**: RESTful API, JWT 인증
-- **DevOps**: Docker, Docker Compose, GitHub Actions
 
 ---
 
@@ -63,7 +62,6 @@ docker-compose up --build
 - `JWT_EXPIRATION`: 토큰 만료 시간(초)
 
 ### Recommendation Service
-- `WEATHER_API_KEY`: 외부 날씨 API 키 (예: OpenWeatherMap)
 
 `.env.example` 파일을 각 서비스 폴더에 포함해 참고용으로 제공합니다.
 
@@ -71,9 +69,15 @@ docker-compose up --build
 
 ## 5. API 문서 (API Reference)
 
-서비스는 FastAPI의 `/docs` 엔드포인트를 통해 API 명세를 제공합니다. Docker로 실행한 후 브라우저에서 서비스에 접속하여 확인할 수 있습니다.
+서비스는 FastAPI의 `/docs` 엔드포인트를 통해 API 명세를 제공합니다.  
+Docker로 실행한 뒤 브라우저에서 확인하세요.
 
-| Virtual Fitting Service| `http://localhost:8000/docs` |
+| 서비스 이름               | 설명                        | 문서 URL                                      |
+|---------------------------|----------------------------|-----------------------------------------------|
+| Virtual Fitting Service   | 가상 피팅 기능 API 명세     | [http://localhost:8000/docs](http://localhost:8000/docs) |
+
+> **기타 서비스 API 명세**는 Notion에서 확인하세요  
+> https://everlasting-avatar-da1.notion.site/API-1c883c32ad608045a5fcfe6834bae448
 
 ---
 
