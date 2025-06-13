@@ -71,16 +71,9 @@ docker-compose up --build
 
 ## 5. API 문서 (API Reference)
 
-모든 서비스는 자체적으로 Swagger 또는 FastAPI의 `/docs` 엔드포인트를 통해 API 명세를 제공합니다. Docker로 실행한 후 브라우저에서 각 서비스에 접속하여 확인할 수 있습니다.
+서비스는 FastAPI의 `/docs` 엔드포인트를 통해 API 명세를 제공합니다. Docker로 실행한 후 브라우저에서 서비스에 접속하여 확인할 수 있습니다.
 
-| 서비스 이름              | 문서 주소                      |
-|-------------------------|-------------------------------|
-| Authentication Service | `http://localhost:8001/docs` |
-| Registration Service   | `http://localhost:8002/docs` |
-| Closet Service         | `http://localhost:8003/docs` |
-| Calendar Service       | `http://localhost:8004/docs` |
-| Recommendation Service | `http://localhost:8005/docs` |
-| Virtual Fitting Service| `http://localhost:8006/docs` |
+| Virtual Fitting Service| `http://localhost:8000/docs` |
 
 ---
 
